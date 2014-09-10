@@ -232,9 +232,14 @@ import mosquitto
 @click.option("-p", "--port", default=1883, help="MQTT host")
 @click.option("--water-low", default=440, help="Low water level")
 @click.option("--water-high", default=590, help="High water level")
-@click.option("--room-temp-low", default=22, help="Low room temp level")
-@click.option("--room-temp-high", default=23, help="High room temp level")
-def bangbang(host, port, water_low, water_high, room_temp_low, room_temp_high):
+@click.option("--water-temp-low", default=28, help="Low water temp")
+@click.option("--water-temp-high", default=29, help="High water temp")
+@click.option("--room-temp-low", default=22, help="Low room temp")
+@click.option("--room-temp-high", default=23, help="High room temp")
+def bangbang(host, port,
+             water_low, water_high,
+             water_temp_low, water_temp_high,
+             room_temp_low, room_temp_high):
     client = mosquitto.Mosquitto("bangbang")
     handler = BangBangHandler(client, host="192.168.20.22")
 
@@ -243,6 +248,12 @@ def bangbang(host, port, water_low, water_high, room_temp_low, room_temp_high):
         measurement_topic="/devices/wb-adc/controls/ADC4",
         relay_topic="/devices/drb88/controls/Relay 6/on",
         low=water_low, high=water_high, enabled=True)
+
+    handler.add_controller(
+        "watertemp",
+        measurement_topic="/devices/wb-w1/controls/000004d11d72",
+        relay_topic="/devices/drb88/controls/Relay 7/on",
+        low=water_temp_low, high=water_temp_high)
 
     handler.add_controller(
         "roomtemp",
